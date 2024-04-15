@@ -96,7 +96,11 @@ app.get('/addtocart/:email', async(req,res)=>{
   const email = req.params.email;
   const query = { userEmail: email}
   res.send(await AddToCartCollection.find(query).toArray())
-
+})
+app.get('/users/:email', async(req,res)=>{
+  const email = req.params.email;
+  const query = { email: email}
+  res.send(await userCollection.find(query).toArray())
 })
 
 // post otion 
@@ -110,6 +114,7 @@ app.post('/users', async(req, res)=>{
   const user = req.body.email;
   // console.log(id);
   const newUser = req.body;
+  console.log(newUser);
   const query = {email: user}
   const result = await userCollection.findOne(query)
   if(result){
@@ -120,15 +125,9 @@ app.post('/users', async(req, res)=>{
 
 })
 app.post('/wishlist', async(req, res)=>{
-  // const id = req.body.productId;
-  // console.log(id);
+
   const wishlist = req.body;
-  // const query = {productId: id}
-  // const result = await wishlistCollection.findOne(query)
-  // if(result){
-  //   return res.send( {message: 'user alreay have', insertId: null})
-  // }
-  // console.log(wishlist)
+  
   res.send(await wishlistCollection.insertOne(wishlist))
 
 })
@@ -139,12 +138,12 @@ const cart = req.body;
 // console.log('card of req', cart);
   const query = {userEmail:  id }
   // console.log("find email",query);
+  const addCart = await AddToCartCollection.insertOne(cart);
   const findWishlist = await wishlistCollection.findOne(query)
+  // res.status(201).send({message: true})
   // console.log("find wishlist",findWishlist);
   if(findWishlist){
     await wishlistCollection.deleteOne({userEmail: id})
-    const addCart = await AddToCartCollection.insertOne(cart);
-
     return res.send( {message: 'wishlist item moved to cart', insertId: addCart.insertedId})
   } 
 
@@ -156,6 +155,11 @@ app.delete('/wishlist/:id', async (req,res)=>{
   const query = {_id: new ObjectId(id)}
   res.send(await wishlistCollection.deleteOne(query))
 })
+app.delete('/users/:id', async (req,res)=>{
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)}
+  res.send(await userCollection.deleteOne(query))
+})
 app.delete('/addtocart/:id', async (req,res)=>{
   const id = req.params.id;
   console.log(id);
@@ -165,7 +169,22 @@ app.delete('/addtocart/:id', async (req,res)=>{
   res.send(result);
 })
 
-
+// update users role 
+app.put('/users/:id', async(req,res)=>{
+  const id = req.params.id;
+  const user = req.body;
+  console.log(user);
+  const query = {_id: new ObjectId(id)}
+  const option = { upsert: true};
+  const UpdateDoc = {
+    $set:{
+      email: user.email,
+      name:user.name,
+      status: user.status
+    }
+  }
+  res.send(await userCollection.updateOne(query, UpdateDoc, option))
+})
 
 
   } finally {
