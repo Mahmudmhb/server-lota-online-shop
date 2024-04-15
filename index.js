@@ -5,7 +5,9 @@ const port = process.PORT || 5000;
 require('dotenv').config()
 
 
-app.use(cors())
+app.use(cors({
+  origin: ['https://lota-online-shop.web.app']
+}))
 app.use(express.json())
 
 
