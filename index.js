@@ -92,6 +92,10 @@ app.get('/wishlist/:id', async(req,res)=>{
   res.send(await wishlistCollection.findOne(query))
 
 })
+
+app.get('/addtocart', async (req,res)=>{
+  res.send(await AddToCartCollection.find().toArray())
+})
 app.get('/addtocart/:email', async(req,res)=>{
   const email = req.params.email;
   const query = { userEmail: email}
@@ -173,7 +177,7 @@ app.delete('/addtocart/:id', async (req,res)=>{
 app.put('/users/:id', async(req,res)=>{
   const id = req.params.id;
   const user = req.body;
-  console.log(user);
+  console.log('user role check',user);
   const query = {_id: new ObjectId(id)}
   const option = { upsert: true};
   const UpdateDoc = {
