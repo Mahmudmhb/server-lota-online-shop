@@ -5,9 +5,7 @@ const port = process.PORT || 5000;
 require('dotenv').config()
 
 
-app.use(cors({
-  origin: ['https://lota-online-shop.web.app']
-}))
+app.use(cors())
 app.use(express.json())
 
 
@@ -120,7 +118,7 @@ app.post('/users', async(req, res)=>{
   const user = req.body.email;
   // console.log(id);
   const newUser = req.body;
-  console.log(newUser);
+  // console.log(newUser);
   const query = {email: user}
   const result = await userCollection.findOne(query)
   if(result){
@@ -144,15 +142,15 @@ const cart = req.body;
 // console.log('card of req', cart);
   const query = {userEmail:  id }
   // console.log("find email",query);
+  
   const addCart = await AddToCartCollection.insertOne(cart);
   const findWishlist = await wishlistCollection.findOne(query)
-  // res.status(201).send({message: true})
   // console.log("find wishlist",findWishlist);
   if(findWishlist){
     await wishlistCollection.deleteOne({userEmail: id})
     return res.send( {message: 'wishlist item moved to cart', insertId: addCart.insertedId})
   } 
-
+  res.status(201).send({message: true})
 })
  
 //  delete item 
@@ -179,7 +177,7 @@ app.delete('/addtocart/:id', async (req,res)=>{
 app.put('/users/:id', async(req,res)=>{
   const id = req.params.id;
   const user = req.body;
-  console.log('user role check',user);
+  // console.log('user role check',user);
   const query = {_id: new ObjectId(id)}
   const option = { upsert: true};
   const UpdateDoc = {
